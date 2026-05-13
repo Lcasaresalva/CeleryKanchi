@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for result backend
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Celery Worker 1
+  worker1:
+    build: .
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
+      PYTHONUNBUFFERED: 1
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: python run_worker.py --queues celery-test,high_priority --concurrency 4 --events --hostname worker1@%h
+
+  # Celery Worker 2
+  worker2:
+    build: .
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
+      PYTHONUNBUFFERED: 1
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: python run_worker.py --queues celery-test,low_priority,cpu_intensive --concurrency 2 --events --hostname worker2@%h
+
+  # Celery Worker 3 (IO tasks)
+  worker3:
+    build: .
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
+      PYTHONUNBUFFERED: 1
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: python run_worker.py --queues io_intensive --concurrency 8 --pool threads --events --hostname worker3@%h
+
+  # Celery Beat Scheduler
+  beat:
+    build: .
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      REDIS_URL: redis://redis:6379/0
+      PYTHONUNBUFFERED: 1
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A celery_app beat --loglevel=info
+
+volumes:
+  rabbitmq_data:
+  redis_data:
+

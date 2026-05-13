@@ -1,0 +1,17 @@
+# Virtual envs
+env/
+.venv/
+venv/
+pyvenv.cfg
+
+# Environment variables
+.env
+.env.*
+
+# logs
+*.log
+
+
+.DS_Store
+/bin
+/lib

@@ -1,0 +1,30 @@
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+  redis-commander:
+    image: rediscommander/redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+  kanchi:
+      image: getkanchi/kanchi:latest
+      container_name: kanchi
+      ports:
+        - "3000:3000" #UI
+        - "8765:8765" #API /websocket
+      environment:
+        # Required: Your Celery broker connection string
+        CELERY_BROKER_URL: redis://redis:6379/0
+        DATABASE_URL: sqlite:////data/kanchi.db
+        LOG_LEVEL: DEBUG
+        DEVELOPMENT_MODE: "false"
+        NUXT_PUBLIC_API_URL: http://localhost:8765
+        NUXT_PUBLIC_WS_URL: ws://localhost:8765/ws
+      volumes:
+         - kanchi-data:/data
+      restart: unless-stopped
+volumes:
+  kanchi-data:

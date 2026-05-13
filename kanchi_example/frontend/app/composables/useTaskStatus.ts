@@ -1,0 +1,201 @@
+import type { BadgeVariants } from '~/components/ui/badge'
+
+// Type aliases for task status and event types
+export type TaskStatus = 'PENDING' | 'RECEIVED' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'RETRY' | 'REVOKED' | 'ORPHANED' | 'UNKNOWN'
+export type TaskEventType = 'task-sent' | 'task-received' | 'task-started' | 'task-succeeded' | 'task-failed' | 'task-retried' | 'task-revoked' | 'task-orphaned'
+
+export const useTaskStatus = () => {
+  const eventTypeToStatus = (eventType: string): TaskStatus => {
+    switch (eventType) {
+      case 'task-sent':
+        return 'PENDING'
+      case 'task-received':
+        return 'RECEIVED'
+      case 'task-started':
+        return 'RUNNING'
+      case 'task-succeeded':
+        return 'SUCCESS'
+      case 'task-failed':
+        return 'FAILED'
+      case 'task-retried':
+        return 'RETRY'
+      case 'task-revoked':
+        return 'REVOKED'
+      case 'task-orphaned':
+        return 'ORPHANED'
+      default:
+        return 'UNKNOWN'
+    }
+  }
+
+  const statusVariants: Record<string, BadgeVariants['variant']> = {
+    'success': 'success',
+    'failed': 'failed',
+    'pending': 'pending',
+    'running': 'running',
+    'retry': 'retry',
+    'revoked': 'revoked',
+    'received': 'received',
+    'orphaned': 'orphaned',
+  }
+
+  const getStatusVariant = (status: string): BadgeVariants['variant'] => {
+    const statusLower = status.toLowerCase()
+    return statusVariants[statusLower] || 'outline'
+  }
+
+  const formatStatus = (status: string): string => {
+    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+  }
+
+  const getAllStatuses = (): TaskStatus[] => {
+    return ['PENDING', 'RECEIVED', 'RUNNING', 'SUCCESS', 'FAILED', 'RETRY', 'REVOKED', 'ORPHANED']
+  }
+
+  const getStatusColor = (status: string) => {
+    const statusLower = status.toLowerCase()
+    
+    const colorMap: Record<string, { pill: string; dot: string; ring?: string }> = {
+      // Success states
+      success: { 
+        pill: 'bg-status-success/10 border-status-success/20 text-status-success', 
+        dot: 'bg-status-success', 
+        ring: 'ring-status-success/40' 
+      },
+      completed: {
+        pill: 'bg-status-success/10 border-status-success/20 text-status-success', 
+        dot: 'bg-status-success', 
+        ring: 'ring-status-success/40' 
+      },
+      
+      // Error states  
+      error: { 
+        pill: 'bg-status-error/10 border-status-error/20 text-status-error', 
+        dot: 'bg-status-error', 
+        ring: 'ring-status-error/40' 
+      },
+      failed: { 
+        pill: 'bg-status-error/10 border-status-error/20 text-status-error', 
+        dot: 'bg-status-error', 
+        ring: 'ring-status-error/40' 
+      },
+      failure: { 
+        pill: 'bg-status-error/10 border-status-error/20 text-status-error', 
+        dot: 'bg-status-error', 
+        ring: 'ring-status-error/40' 
+      },
+      
+      // Running states
+      running: { 
+        pill: 'bg-status-info/10 border-status-info/20 text-status-info', 
+        dot: 'bg-status-info', 
+        ring: 'ring-status-info/40' 
+      },
+      processing: { 
+        pill: 'bg-status-info/10 border-status-info/20 text-status-info', 
+        dot: 'bg-status-info', 
+        ring: 'ring-status-info/40' 
+      },
+      started: { 
+        pill: 'bg-status-info/10 border-status-info/20 text-status-info', 
+        dot: 'bg-status-info', 
+        ring: 'ring-status-info/40' 
+      },
+      
+      // Pending states
+      pending: { 
+        pill: 'bg-status-warning/10 border-status-warning/20 text-status-warning', 
+        dot: 'bg-status-warning', 
+        ring: 'ring-status-warning/40' 
+      },
+      waiting: { 
+        pill: 'bg-status-warning/10 border-status-warning/20 text-status-warning', 
+        dot: 'bg-status-warning', 
+        ring: 'ring-status-warning/40' 
+      },
+      
+      // Special states
+      received: { 
+        pill: 'bg-status-special/10 border-status-special/20 text-status-special', 
+        dot: 'bg-status-special', 
+        ring: 'ring-status-special/40' 
+      },
+      
+      // Retry states
+      retry: { 
+        pill: 'bg-status-retry/10 border-status-retry/20 text-status-retry', 
+        dot: 'bg-status-retry', 
+        ring: 'ring-status-retry/40' 
+      },
+      retrying: { 
+        pill: 'bg-status-retry/10 border-status-retry/20 text-status-retry', 
+        dot: 'bg-status-retry', 
+        ring: 'ring-status-retry/40' 
+      },
+      
+      // Neutral states
+      cancelled: { 
+        pill: 'bg-status-neutral/10 border-status-neutral/20 text-status-neutral', 
+        dot: 'bg-status-neutral', 
+        ring: 'ring-status-neutral/40' 
+      },
+      revoked: { 
+        pill: 'bg-status-neutral/10 border-status-neutral/20 text-status-neutral', 
+        dot: 'bg-status-neutral', 
+        ring: 'ring-status-neutral/40' 
+      },
+      ignored: { 
+        pill: 'bg-status-neutral/10 border-status-neutral/20 text-status-neutral', 
+        dot: 'bg-status-neutral', 
+        ring: 'ring-status-neutral/40' 
+      },
+      rejected: { 
+        pill: 'bg-status-neutral/10 border-status-neutral/20 text-status-neutral', 
+        dot: 'bg-status-neutral', 
+        ring: 'ring-status-neutral/40' 
+      },
+      orphaned: {
+        pill: 'bg-status-neutral/10 border-status-neutral/20 text-status-neutral',
+        dot: 'bg-status-neutral',
+        ring: 'ring-status-neutral/40'
+      },
+      
+      // Default
+      unknown: {
+        pill: 'bg-gray-500/10 border-gray-500/20 text-gray-400',
+        dot: 'bg-gray-500',
+        ring: 'ring-gray-400/40'
+      }
+    }
+    
+    return colorMap[statusLower] || colorMap.unknown
+  }
+
+  const isAnimatedStatus = (status: string): boolean => {
+    return ['running', 'processing', 'pending'].includes(status.toLowerCase())
+  }
+
+  const getDotColorClass = (status: string): string => {
+    const colors: Record<string, string> = {
+      online: 'bg-status-success',
+      success: 'bg-status-success',
+      offline: 'bg-status-error',
+      error: 'bg-status-error',
+      warning: 'bg-status-warning',
+      info: 'bg-status-info',
+      muted: 'bg-gray-400',
+    }
+    return colors[status.toLowerCase()] || 'bg-gray-500'
+  }
+
+  return {
+    eventTypeToStatus,
+    statusVariants,
+    getStatusVariant,
+    formatStatus,
+    getAllStatuses,
+    getStatusColor,
+    isAnimatedStatus,
+    getDotColorClass
+  }
+}

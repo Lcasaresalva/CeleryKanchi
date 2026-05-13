@@ -1,0 +1,65 @@
+"""API routes for logging endpoints."""
+
+import logging
+from datetime import datetime, timezone
+from fastapi import APIRouter, HTTPException, Depends
+
+from models import LogEntry
+from config import Config
+from security.dependencies import get_auth_dependency
+
+
+def create_router(app_state) -> APIRouter:
+    """Create log router with dependency injection."""
+    router = APIRouter(prefix="/api/logs", tags=["logs"])
+
+    config = app_state.config or Config.from_env()
+    require_user_dep = get_auth_dependency(app_state, require=True)
+
+    if config.auth_enabled:
+        router.dependencies.append(Depends(require_user_dep))
+
+    @router.post("/frontend")
+    async def log_frontend_message(log_entry: LogEntry):
+        """Receive log messages from frontend and write to unified log file (only in development mode)."""
+        # Check if development mode is enabled
+        effective_config = app_state.config or Config.from_env()
+        if not effective_config.development_mode:
+            return {
+                "status": "disabled",
+                "message": "Logging is only available in development mode",
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+
+        try:
+            # Get the unified logger
+            logger = logging.getLogger("kanchi_example.frontend")
+
+            # Map log level string to logging level
+            level_map = {
+                "debug": logging.DEBUG,
+                "info": logging.INFO,
+                "warning": logging.WARNING,
+                "warn": logging.WARNING,
+                "error": logging.ERROR,
+                "critical": logging.CRITICAL,
+            }
+
+            level = level_map.get(log_entry.level.lower(), logging.INFO)
+
+            # Format the message with context if provided
+            message = log_entry.message
+            if log_entry.context:
+                message = f"{message} | Context: {log_entry.context}"
+
+            # Log with the appropriate level
+            logger.log(level, message)
+
+            return {
+                "status": "success",
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to log message: {str(e)}")
+
+    return router
