@@ -1,8 +1,8 @@
-# Celery Monitoring with Kanchi
+# POC: Celery Monitoring with Kanchi
 
 There are 2 simpler examples for setting up a Celery queuing system before moving on to the final example with Kanchi monitoring:
 
-Prerequisites:
+#### **_Prerequisites_**:
 
  - Create a virtual environment and install the required packages:
 
@@ -17,7 +17,7 @@ Prerequisites:
   - For more details on how to set up the environment, please refer to the Celery site https://docs.celeryq.dev/en/latest/index.html
 
   
-1- simple_example:
+## 1- simple_example:
 
 * execute the task to check the result:
 
@@ -58,7 +58,7 @@ Prerequisites:
   
 
 
-2- routing_example
+## 2- routing_example
 
 In this case we have two different tasks, and 2 queues. We want each of these tasks to be processed by a different worker.
 The procedure to execute the tasks is the same as in the previous example, but we need to specify the queue when we execute the task:
@@ -76,15 +76,28 @@ To check the workers we have to open 2 different terminals, and run the followin
 
 Then we can check the result of each task as we did in the previous example, and see that they are being processed by different workers.
 
-3- kanchi_example
+## 3- kanchi_example
+
+#### _References_: 
+* https://kanchi.io/docs/getting-started/quickstart
+
+* https://github.com/getkanchi/kanchi
+
+#### Prerequisites:
+
+* Install Poetry
+* Node.js
+
 
 First of all we need to start the containers for redis, kanchi and redis-commander with
 
 * docker compose up -d --pull always
 
-Execute the same test explained in the example 2- routing_example.
+Execute the same tests explained in the example 2- routing_example.
 
 Open the kanchi console: http://localhost:3000/
+
+We can also access redis backend in http://localhost:8081/
 
 
 ![img_4.png](img_4.png)
