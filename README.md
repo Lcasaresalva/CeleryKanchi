@@ -78,6 +78,9 @@ Then we can check the result of each task as we did in the previous example, and
 
 ## 3- kanchi_example
 
+Note: In this example, 'k8s-manifests' and 'scripts' folders are not necessary.
+
+ voy a ponerme con ello ahora pero igual os pido help 
 #### _References_: 
 * https://kanchi.io/docs/getting-started/quickstart
 
