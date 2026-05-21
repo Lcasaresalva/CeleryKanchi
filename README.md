@@ -99,7 +99,17 @@ Open the kanchi console: http://localhost:3000/
 
 We can also access redis backend in http://localhost:8081/
 
+By simply accessing the Dashboard, we can already see some of the key features that make Kanchi stand out over other solutions like Flower.
 
-![img_4.png](img_4.png)
 
-![img_3.png](img_3.png)
+![Kanchi-dashboard.jpg](Kanchi-dashboard.jpg)
+
+
+In addition, we can also create workflows to have any event under control
+
+![img_2.png](img_2.png)
+
+And observe some tasks performance details:
+
+![img_5.png](img_5.png)
+
