@@ -85,7 +85,7 @@ Note: In this example, 'k8s-manifests' and 'scripts' folders are not necessary.
 
 * https://github.com/getkanchi/kanchi
 
-#### Prerequisites:
+#### Prerequisites (local setup):
 
 * Install Poetry
 * Node.js
