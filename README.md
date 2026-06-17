@@ -95,7 +95,9 @@ First of all we need to start the containers for redis, kanchi and redis-command
 
 * docker compose up -d --pull always
 
-Execute the same tests explained in the example 2- routing_example.
+Execute the same tests explained in the example 2- routing_example, taking into account that we'll need the param -E to see events, so the command remains like this:
+ celery -A celery_app worker -E  -Q priority -n priority@worker --loglevel INFO
+
 
 Open the kanchi console: http://localhost:3000/
 
